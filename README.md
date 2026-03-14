@@ -10,5 +10,13 @@ Devroast e um app web que recebe codigo e devolve uma analise direta, com um toq
 ## Evento
 Este projeto foi construido durante o evento **NLW** da Rocketseat, nas aulas do evento.
 
+## Como iniciar
+```bash
+pnpm install
+pnpm dev
+```
+
+Abra http://localhost:3000 no navegador.
+
 ## Status
 Versao inicial com dados estaticos (sem API).
