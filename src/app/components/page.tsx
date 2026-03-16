@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/status-badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CodeBlock } from "@/components/ui/code-block";
+import { CodeEditorPreview } from "@/app/components/code-editor-preview";
 import { DiffLine } from "@/components/ui/diff-line";
 import {
   TableRowCode,
@@ -176,6 +177,8 @@ export default function ComponentsPage() {
             />
           </div>
         </section>
+
+        <CodeEditorPreview />
 
         <section className="flex flex-col gap-6">
           <SectionTitleRoot>

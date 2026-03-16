@@ -13,6 +13,7 @@ Este projeto foi construido durante o evento **NLW** da Rocketseat, nas aulas do
 ## Como iniciar
 ```bash
 pnpm install
+pnpm db:migrate
 pnpm dev
 ```
 

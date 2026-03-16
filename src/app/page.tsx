@@ -4,7 +4,12 @@ import * as React from "react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { CodeInput } from "@/components/ui/code-input";
+import {
+  CodeEditorArea,
+  CodeEditorLanguageSelect,
+  CodeEditorRoot,
+  CodeEditorToolbar,
+} from "@/components/ui/code-editor";
 import {
   TableRowCode,
   TableRowLang,
@@ -43,12 +48,17 @@ export default function Home() {
         </section>
 
         <section className="flex w-full flex-col gap-6">
-          <CodeInput
+          <CodeEditorRoot
             value={code}
             onValueChange={setCode}
-            className="mx-auto w-full max-w-[780px]"
             placeholder="// paste your code here..."
-          />
+            className="mx-auto w-full max-w-[780px]"
+          >
+            <CodeEditorToolbar>
+              <CodeEditorLanguageSelect />
+            </CodeEditorToolbar>
+            <CodeEditorArea />
+          </CodeEditorRoot>
 
           <div className="mx-auto flex w-full max-w-[780px] items-center justify-between">
             <div className="flex items-center gap-4">
