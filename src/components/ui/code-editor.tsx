@@ -247,6 +247,29 @@ export const CodeEditorArea = ({
   const { value, setValue, language, placeholderText } = useCodeEditorContext();
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const viewRef = React.useRef<EditorView | null>(null);
+  const lineHeight = 24;
+  const verticalPadding = 32;
+  const headerHeight = 40;
+  const gutterWidth = 52;
+  const contentPaddingX = 12;
+  const fontSize = 12;
+  const minLines = Math.max(1, Math.floor((height - verticalPadding) / lineHeight));
+
+  const getPaddedValue = React.useCallback(
+    (rawValue: string) => {
+      const lines = rawValue.split(/\r\n|\r|\n/);
+      const padding = Math.max(minLines - lines.length, 0);
+      if (padding === 0) {
+        return rawValue;
+      }
+      return `${rawValue}${"\n".repeat(padding)}`;
+    },
+    [minLines],
+  );
+
+  const stripPadding = React.useCallback((rawValue: string) => {
+    return rawValue.replace(/\n+$/, "");
+  }, []);
 
   React.useEffect(() => {
     if (!containerRef.current) {
@@ -274,15 +297,16 @@ export const CodeEditorArea = ({
         backgroundColor: "var(--color-bg-surface)",
         color: "var(--color-text-tertiary)",
         borderRight: "1px solid var(--color-border-primary)",
+        minWidth: `${gutterWidth}px`,
       },
       ".cm-lineNumbers .cm-gutterElement": {
-        padding: "0 12px",
-        lineHeight: "24px",
-        height: "24px",
+        padding: `0 ${contentPaddingX}px`,
+        lineHeight: `${lineHeight}px`,
+        height: `${lineHeight}px`,
       },
       ".cm-line": {
-        padding: "0 12px",
-        lineHeight: "24px",
+        padding: `0 ${contentPaddingX}px`,
+        lineHeight: `${lineHeight}px`,
       },
       ".cm-placeholder": {
         color: "var(--color-text-tertiary)",
@@ -303,7 +327,7 @@ export const CodeEditorArea = ({
 
     const updateListener = EditorView.updateListener.of((update) => {
       if (update.docChanged) {
-        setValue(update.state.doc.toString());
+        setValue(stripPadding(update.state.doc.toString()));
       }
     });
 
@@ -343,7 +367,7 @@ export const CodeEditorArea = ({
     }
 
     const state = EditorState.create({
-      doc: value,
+      doc: getPaddedValue(value),
       extensions,
     });
 
@@ -358,7 +382,7 @@ export const CodeEditorArea = ({
       view.destroy();
       viewRef.current = null;
     };
-  }, [language, placeholderText, height]);
+  }, [language, placeholderText, height, getPaddedValue, lineHeight, minLines, stripPadding]);
 
   React.useEffect(() => {
     const view = viewRef.current;
@@ -367,19 +391,22 @@ export const CodeEditorArea = ({
     }
 
     const current = view.state.doc.toString();
-    if (current === value) {
+    const nextValue = getPaddedValue(value);
+    if (current === nextValue) {
       return;
     }
 
     view.dispatch({
-      changes: { from: 0, to: current.length, insert: value },
+      changes: { from: 0, to: current.length, insert: nextValue },
     });
-  }, [value]);
+  }, [value, getPaddedValue]);
+
+  const showPlaceholder = !value.trim() && placeholderText;
 
   return (
     <div
       className={cn(
-        "w-full overflow-hidden border border-border-primary bg-bg-input",
+        "relative w-full overflow-hidden border border-border-primary bg-bg-input",
         className,
       )}
     >
@@ -391,6 +418,20 @@ export const CodeEditorArea = ({
         </div>
       </div>
       <div ref={containerRef} />
+      {showPlaceholder ? (
+        <div
+          className="pointer-events-none absolute font-mono text-[12px] leading-6 text-text-tertiary"
+          style={{
+            left: gutterWidth + contentPaddingX,
+            top:
+              headerHeight +
+              verticalPadding / 2 +
+              (lineHeight - fontSize) / 2,
+          }}
+        >
+          {placeholderText}
+        </div>
+      ) : null}
     </div>
   );
 };
