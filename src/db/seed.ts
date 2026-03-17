@@ -108,7 +108,7 @@ const seed = async () => {
       code,
       language: faker.helpers.arrayElement(languages),
       roastMode: true,
-      status: "processed",
+      status: "processed" as const,
       score: makeScore(),
       roastSummary: faker.helpers.arrayElement(roastSummaries),
       roastQuote: faker.helpers.arrayElement(roastQuotes),

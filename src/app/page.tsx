@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
-
+import * as React from "react";
+import { HomeMetrics } from "@/components/home/home-metrics";
 import { Button } from "@/components/ui/button";
 import {
   CodeEditorArea,
@@ -19,7 +19,12 @@ import {
   TableRowRoot,
   TableRowScore,
 } from "@/components/ui/table-row";
-import { ToggleHint, ToggleLabel, ToggleRoot, ToggleThumb } from "@/components/ui/toggle";
+import {
+  ToggleHint,
+  ToggleLabel,
+  ToggleRoot,
+  ToggleThumb,
+} from "@/components/ui/toggle";
 import {
   Description,
   Heading,
@@ -46,8 +51,9 @@ export default function Home() {
             </Heading>
           </div>
           <Description className="mx-auto w-full max-w-[780px]">
-            // drop your code below and we'll rate it — brutally honest or full
-            roast mode
+            {
+              "// drop your code below and we'll rate it — brutally honest or full roast mode"
+            }
           </Description>
         </section>
 
@@ -76,7 +82,7 @@ export default function Home() {
                 </ToggleRoot>
                 <ToggleLabel>roast mode</ToggleLabel>
               </div>
-              <ToggleHint>// maximum sarcasm enabled</ToggleHint>
+              <ToggleHint>{"// maximum sarcasm enabled"}</ToggleHint>
             </div>
             <Button variant="primary" disabled={!hasCode || isOverLimit}>
               $ roast_my_code
@@ -84,23 +90,21 @@ export default function Home() {
           </div>
         </section>
 
-        <div className="flex items-center justify-center gap-6 text-[12px] text-text-tertiary">
-          <span className="font-sans">2,847 codes roasted</span>
-          <span className="font-mono">·</span>
-          <span className="font-sans">avg score: 4.2/10</span>
-        </div>
+        <HomeMetrics />
 
         <div className="h-14" />
 
         <section className="mx-auto flex w-full max-w-[960px] flex-col gap-6">
           <div className="flex w-full items-center justify-between">
             <SectionTitleRoot>
-              <SectionTitleSlash>//</SectionTitleSlash>
+              <SectionTitleSlash>{"//"}</SectionTitleSlash>
               <SectionTitleLabel>shame_leaderboard</SectionTitleLabel>
             </SectionTitleRoot>
             <Button variant="link">$ view_all &gt;&gt;</Button>
           </div>
-          <Description>// the worst code on the internet, ranked by shame</Description>
+          <Description>
+            {"// the worst code on the internet, ranked by shame"}
+          </Description>
 
           <div className="w-full overflow-hidden border border-border-primary">
             <div className="flex h-10 items-center gap-6 border-b border-border-primary bg-bg-surface px-5 font-mono text-[12px] font-medium text-text-tertiary">
@@ -119,7 +123,7 @@ export default function Home() {
                   <span className="truncate">eval(prompt("enter code"))</span>
                   <span className="truncate">document.write(response)</span>
                   <span className="truncate text-text-tertiary">
-                    // trust the user lol
+                    {"// trust the user lol"}
                   </span>
                 </div>
               </TableRowCode>
@@ -150,7 +154,9 @@ export default function Home() {
               <TableRowScore>2.1</TableRowScore>
               <TableRowCode>
                 <div className="flex min-w-0 flex-col gap-1 text-text-primary">
-                  <span className="truncate">SELECT * FROM users WHERE 1=1</span>
+                  <span className="truncate">
+                    SELECT * FROM users WHERE 1=1
+                  </span>
                   <span className="truncate text-text-tertiary">
                     -- TODO: add authentication
                   </span>

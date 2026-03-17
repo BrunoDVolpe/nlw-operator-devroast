@@ -1,6 +1,21 @@
 "use client";
 
-import * as React from "react";
+import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
+import { history, historyKeymap } from "@codemirror/commands";
+import { go } from "@codemirror/lang-go";
+import { javascript } from "@codemirror/lang-javascript";
+import { json } from "@codemirror/lang-json";
+import { markdown } from "@codemirror/lang-markdown";
+import { python } from "@codemirror/lang-python";
+import { rust } from "@codemirror/lang-rust";
+import { sql } from "@codemirror/lang-sql";
+import {
+  bracketMatching,
+  HighlightStyle,
+  indentOnInput,
+  indentUnit,
+  syntaxHighlighting,
+} from "@codemirror/language";
 import { EditorState, type Extension } from "@codemirror/state";
 import {
   EditorView,
@@ -10,32 +25,17 @@ import {
   lineNumbers,
   placeholder,
 } from "@codemirror/view";
-import {
-  HighlightStyle,
-  bracketMatching,
-  indentOnInput,
-  indentUnit,
-  syntaxHighlighting,
-} from "@codemirror/language";
-import { history, historyKeymap } from "@codemirror/commands";
-import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
 import { tags } from "@lezer/highlight";
-import { javascript } from "@codemirror/lang-javascript";
-import { python } from "@codemirror/lang-python";
-import { rust } from "@codemirror/lang-rust";
-import { go } from "@codemirror/lang-go";
-import { sql } from "@codemirror/lang-sql";
-import { json } from "@codemirror/lang-json";
-import { markdown } from "@codemirror/lang-markdown";
 import hljs from "highlight.js/lib/core";
-import javascriptLang from "highlight.js/lib/languages/javascript";
-import typescriptLang from "highlight.js/lib/languages/typescript";
-import pythonLang from "highlight.js/lib/languages/python";
-import rustLang from "highlight.js/lib/languages/rust";
 import goLang from "highlight.js/lib/languages/go";
-import sqlLang from "highlight.js/lib/languages/sql";
+import javascriptLang from "highlight.js/lib/languages/javascript";
 import jsonLang from "highlight.js/lib/languages/json";
 import markdownLang from "highlight.js/lib/languages/markdown";
+import pythonLang from "highlight.js/lib/languages/python";
+import rustLang from "highlight.js/lib/languages/rust";
+import sqlLang from "highlight.js/lib/languages/sql";
+import typescriptLang from "highlight.js/lib/languages/typescript";
+import * as React from "react";
 
 import { cn } from "@/lib/cn";
 
@@ -96,7 +96,9 @@ const CodeEditorContext = React.createContext<CodeEditorContextValue | null>(
 const useCodeEditorContext = () => {
   const context = React.useContext(CodeEditorContext);
   if (!context) {
-    throw new Error("CodeEditor components must be used within CodeEditorRoot.");
+    throw new Error(
+      "CodeEditor components must be used within CodeEditorRoot.",
+    );
   }
   return context;
 };
@@ -122,7 +124,9 @@ export const CodeEditorRoot = ({
   className,
   children,
 }: CodeEditorRootProps) => {
-  const [language, setLanguage] = React.useState<string | null>(defaultLanguage);
+  const [language, setLanguage] = React.useState<string | null>(
+    defaultLanguage,
+  );
   const [languageMode, setLanguageMode] =
     React.useState<LanguageMode>(defaultLanguageMode);
   const [detectedLanguage, setDetectedLanguage] = React.useState<string | null>(
@@ -141,7 +145,10 @@ export const CodeEditorRoot = ({
 
     const timeout = setTimeout(() => {
       const sample = value.slice(0, AUTO_DETECT_MAX_LENGTH);
-      const result = hljs.highlightAuto(sample, SUPPORTED_LANGUAGES.map((l) => l.id));
+      const result = hljs.highlightAuto(
+        sample,
+        SUPPORTED_LANGUAGES.map((l) => l.id),
+      );
 
       if (
         result.relevance >= AUTO_DETECT_THRESHOLD &&
@@ -188,7 +195,9 @@ export const CodeEditorRoot = ({
 
   return (
     <CodeEditorContext.Provider value={contextValue}>
-      <div className={cn("flex w-full flex-col gap-3", className)}>{children}</div>
+      <div className={cn("flex w-full flex-col gap-3", className)}>
+        {children}
+      </div>
     </CodeEditorContext.Provider>
   );
 };
@@ -199,7 +208,10 @@ export const CodeEditorToolbar = ({
   className,
   ...props
 }: CodeEditorToolbarProps) => (
-  <div className={cn("flex items-center justify-between", className)} {...props} />
+  <div
+    className={cn("flex items-center justify-between", className)}
+    {...props}
+  />
 );
 
 export type CodeEditorLanguageSelectProps = {
@@ -217,10 +229,8 @@ export const CodeEditorLanguageSelect = ({
     detectedLanguage,
   } = useCodeEditorContext();
 
-  const value = languageMode === "auto" ? "auto" : language ?? "javascript";
-  const autoLabel = detectedLanguage
-    ? `Auto (${detectedLanguage})`
-    : "Auto";
+  const value = languageMode === "auto" ? "auto" : (language ?? "javascript");
+  const autoLabel = detectedLanguage ? `Auto (${detectedLanguage})` : "Auto";
 
   return (
     <label className={cn("flex items-center gap-2", className)}>
@@ -268,7 +278,10 @@ export const CodeEditorArea = ({
   const gutterWidth = 52;
   const contentPaddingX = 12;
   const fontSize = 12;
-  const minLines = Math.max(1, Math.floor((height - verticalPadding) / lineHeight));
+  const minLines = Math.max(
+    1,
+    Math.floor((height - verticalPadding) / lineHeight),
+  );
 
   const getPaddedValue = React.useCallback(
     (rawValue: string) => {
@@ -385,7 +398,10 @@ export const CodeEditorArea = ({
 
     const highlightStyle = HighlightStyle.define([
       { tag: tags.keyword, color: "var(--color-syn-keyword)" },
-      { tag: tags.function(tags.variableName), color: "var(--color-syn-function)" },
+      {
+        tag: tags.function(tags.variableName),
+        color: "var(--color-syn-function)",
+      },
       { tag: tags.number, color: "var(--color-syn-number)" },
       { tag: tags.operator, color: "var(--color-syn-operator)" },
       { tag: tags.propertyName, color: "var(--color-syn-property)" },
@@ -436,7 +452,16 @@ export const CodeEditorArea = ({
       view.destroy();
       viewRef.current = null;
     };
-  }, [language, placeholderText, height, getPaddedValue, lineHeight, minLines, stripPadding]);
+  }, [
+    language,
+    placeholderText,
+    height,
+    getPaddedValue,
+    maxChars,
+    setValue,
+    stripPadding,
+    value,
+  ]);
 
   React.useEffect(() => {
     const view = viewRef.current;
@@ -471,16 +496,14 @@ export const CodeEditorArea = ({
           <span className="h-3 w-3 rounded-full bg-[#10B981]" />
         </div>
       </div>
-      <div ref={containerRef} />
+      <div ref={containerRef} style={{ height }} />
       {showPlaceholder ? (
         <div
           className="pointer-events-none absolute font-mono text-[12px] leading-6 text-text-tertiary"
           style={{
             left: gutterWidth + contentPaddingX,
             top:
-              headerHeight +
-              verticalPadding / 2 +
-              (lineHeight - fontSize) / 2,
+              headerHeight + verticalPadding / 2 + (lineHeight - fontSize) / 2,
           }}
         >
           {placeholderText}
@@ -496,7 +519,10 @@ export const CodeEditorFooter = ({
   className,
   ...props
 }: CodeEditorFooterProps) => (
-  <div className={cn("flex items-center justify-between", className)} {...props} />
+  <div
+    className={cn("flex items-center justify-between", className)}
+    {...props}
+  />
 );
 
 export type CodeEditorCounterProps = React.HTMLAttributes<HTMLSpanElement>;

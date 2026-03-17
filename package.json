@@ -31,6 +31,12 @@
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.40.0",
     "@lezer/highlight": "^1.2.3",
+    "@number-flow/react": "^0.6.0",
+    "@tanstack/react-query": "^5.90.21",
+    "@trpc/client": "^11.13.4",
+    "@trpc/server": "^11.13.4",
+    "@trpc/tanstack-react-query": "^11.13.4",
+    "client-only": "^0.0.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.44.5",
     "highlight.js": "^11.11.1",
@@ -38,9 +44,11 @@
     "pg": "^8.16.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "server-only": "^0.0.1",
     "shiki": "^4.0.2",
     "tailwind-merge": "^3.5.0",
-    "tailwind-variants": "^3.2.2"
+    "tailwind-variants": "^3.2.2",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.7",
