@@ -84,6 +84,9 @@ type CodeEditorContextValue = {
   setLanguageMode: (value: LanguageMode) => void;
   detectedLanguage: string | null;
   placeholderText?: string;
+  maxChars: number;
+  charCount: number;
+  isOverLimit: boolean;
 };
 
 const CodeEditorContext = React.createContext<CodeEditorContextValue | null>(
@@ -104,6 +107,7 @@ export type CodeEditorRootProps = {
   defaultLanguage?: string | null;
   defaultLanguageMode?: LanguageMode;
   placeholder?: string;
+  maxChars?: number;
   className?: string;
   children: React.ReactNode;
 };
@@ -114,6 +118,7 @@ export const CodeEditorRoot = ({
   defaultLanguage = null,
   defaultLanguageMode = "auto",
   placeholder: placeholderText,
+  maxChars = 2000,
   className,
   children,
 }: CodeEditorRootProps) => {
@@ -151,6 +156,9 @@ export const CodeEditorRoot = ({
     return () => clearTimeout(timeout);
   }, [value, languageMode]);
 
+  const charCount = value.length;
+  const isOverLimit = charCount > maxChars;
+
   const contextValue = React.useMemo<CodeEditorContextValue>(
     () => ({
       value,
@@ -161,6 +169,9 @@ export const CodeEditorRoot = ({
       setLanguageMode,
       detectedLanguage,
       placeholderText,
+      maxChars,
+      charCount,
+      isOverLimit,
     }),
     [
       value,
@@ -169,6 +180,9 @@ export const CodeEditorRoot = ({
       languageMode,
       detectedLanguage,
       placeholderText,
+      maxChars,
+      charCount,
+      isOverLimit,
     ],
   );
 
@@ -244,7 +258,8 @@ export const CodeEditorArea = ({
   className,
   height = 360,
 }: CodeEditorAreaProps) => {
-  const { value, setValue, language, placeholderText } = useCodeEditorContext();
+  const { value, setValue, language, placeholderText, maxChars } =
+    useCodeEditorContext();
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const viewRef = React.useRef<EditorView | null>(null);
   const lineHeight = 24;
@@ -331,6 +346,43 @@ export const CodeEditorArea = ({
       }
     });
 
+    const focusAtStart = EditorView.domEventHandlers({
+      focus: (_event, view) => {
+        const rawValue = stripPadding(view.state.doc.toString());
+        if (!rawValue.trim()) {
+          view.dispatch({ selection: { anchor: 0 } });
+          view.scrollDOM.scrollTop = 0;
+        }
+      },
+      mousedown: (event, view) => {
+        const rawValue = stripPadding(view.state.doc.toString());
+        if (!rawValue.trim()) {
+          event.preventDefault();
+          view.dispatch({ selection: { anchor: 0 } });
+          view.focus();
+          view.scrollDOM.scrollTop = 0;
+          return true;
+        }
+        return false;
+      },
+    });
+
+    const limitFilter = EditorState.transactionFilter.of((tr) => {
+      if (!tr.docChanged) {
+        return tr;
+      }
+      const nextValue = tr.newDoc.toString();
+      if (nextValue.length <= maxChars) {
+        return tr;
+      }
+      const clipped = nextValue.slice(0, maxChars);
+      return [
+        tr.startState.update({
+          changes: { from: 0, to: tr.startState.doc.length, insert: clipped },
+        }),
+      ];
+    });
+
     const highlightStyle = HighlightStyle.define([
       { tag: tags.keyword, color: "var(--color-syn-keyword)" },
       { tag: tags.function(tags.variableName), color: "var(--color-syn-function)" },
@@ -356,6 +408,8 @@ export const CodeEditorArea = ({
       indentUnit.of("  "),
       theme,
       updateListener,
+      focusAtStart,
+      limitFilter,
     ];
 
     if (placeholderText) {
@@ -406,7 +460,7 @@ export const CodeEditorArea = ({
   return (
     <div
       className={cn(
-        "relative w-full overflow-hidden border border-border-primary bg-bg-input",
+        "code-editor relative w-full overflow-hidden border border-border-primary bg-bg-input",
         className,
       )}
     >
@@ -444,3 +498,25 @@ export const CodeEditorFooter = ({
 }: CodeEditorFooterProps) => (
   <div className={cn("flex items-center justify-between", className)} {...props} />
 );
+
+export type CodeEditorCounterProps = React.HTMLAttributes<HTMLSpanElement>;
+
+export const CodeEditorCounter = ({
+  className,
+  ...props
+}: CodeEditorCounterProps) => {
+  const { charCount, maxChars, isOverLimit } = useCodeEditorContext();
+
+  return (
+    <span
+      className={cn(
+        "font-mono text-[12px]",
+        isOverLimit ? "text-accent-red" : "text-text-tertiary",
+        className,
+      )}
+      {...props}
+    >
+      {charCount}/{maxChars}
+    </span>
+  );
+};

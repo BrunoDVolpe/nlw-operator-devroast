@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   CodeEditorArea,
+  CodeEditorCounter,
+  CodeEditorFooter,
   CodeEditorLanguageSelect,
   CodeEditorRoot,
   CodeEditorToolbar,
@@ -28,8 +30,10 @@ import {
 } from "@/components/ui/typography";
 
 export default function Home() {
+  const maxChars = 2000;
   const [code, setCode] = React.useState("");
   const hasCode = code.trim().length > 0;
+  const isOverLimit = code.length > maxChars;
 
   return (
     <main className="bg-bg-page">
@@ -52,12 +56,16 @@ export default function Home() {
             value={code}
             onValueChange={setCode}
             placeholder="// paste your code here..."
+            maxChars={maxChars}
             className="mx-auto w-full max-w-[780px]"
           >
             <CodeEditorToolbar>
               <CodeEditorLanguageSelect />
             </CodeEditorToolbar>
             <CodeEditorArea />
+            <CodeEditorFooter className="justify-end">
+              <CodeEditorCounter />
+            </CodeEditorFooter>
           </CodeEditorRoot>
 
           <div className="mx-auto flex w-full max-w-[780px] items-center justify-between">
@@ -70,7 +78,7 @@ export default function Home() {
               </div>
               <ToggleHint>// maximum sarcasm enabled</ToggleHint>
             </div>
-            <Button variant="primary" disabled={!hasCode}>
+            <Button variant="primary" disabled={!hasCode || isOverLimit}>
               $ roast_my_code
             </Button>
           </div>

@@ -23,6 +23,7 @@
   --color-text-primary: #fafafa;
   --color-text-secondary: #6b7280;
   --color-text-tertiary: #4b5563;
+  --color-text-comment: #8b8b8b;
 
   --color-ink: #0a0a0a;
   --color-black: #000000;
@@ -59,4 +60,27 @@
 .code-block code {
   font-size: 13px;
   line-height: 1.5;
+}
+
+.code-editor .cm-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: #2f2f2f #0f0f0f;
+}
+
+.code-editor .cm-scroller::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.code-editor .cm-scroller::-webkit-scrollbar-track {
+  background: #0f0f0f;
+}
+
+.code-editor .cm-scroller::-webkit-scrollbar-thumb {
+  background: #2f2f2f;
+  border-radius: 999px;
+}
+
+.code-editor .cm-scroller::-webkit-scrollbar-thumb:hover {
+  background: #3f3f3f;
 }

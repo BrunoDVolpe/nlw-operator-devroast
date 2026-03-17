@@ -1,4 +1,32 @@
+import { CodeEditorPreview } from "@/app/components/code-editor-preview";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  CodeBlock,
+  CodeBlockHeaderDots,
+  CodeBlockHeaderRoot,
+  CodeBlockHeaderTitle,
+  CodeBlockRoot,
+} from "@/components/ui/code-block";
+import { DiffLine } from "@/components/ui/diff-line";
+import {
+  StatusBadgeDot,
+  StatusBadgeLabel,
+  StatusBadgeRoot,
+} from "@/components/ui/status-badge";
+import {
+  TableRowCode,
+  TableRowLang,
+  TableRowRank,
+  TableRowRoot,
+  TableRowScore,
+} from "@/components/ui/table-row";
+import { ToggleLabel, ToggleRoot, ToggleThumb } from "@/components/ui/toggle";
 import {
   CodeInline,
   Description,
@@ -8,23 +36,6 @@ import {
   SectionTitleRoot,
   SectionTitleSlash,
 } from "@/components/ui/typography";
-import { ToggleLabel, ToggleRoot, ToggleThumb } from "@/components/ui/toggle";
-import {
-  StatusBadgeDot,
-  StatusBadgeLabel,
-  StatusBadgeRoot,
-} from "@/components/ui/status-badge";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CodeBlock } from "@/components/ui/code-block";
-import { CodeEditorPreview } from "@/app/components/code-editor-preview";
-import { DiffLine } from "@/components/ui/diff-line";
-import {
-  TableRowCode,
-  TableRowLang,
-  TableRowRank,
-  TableRowRoot,
-  TableRowScore,
-} from "@/components/ui/table-row";
 
 const buttonVariants = ["primary", "secondary", "link"] as const;
 const buttonSizes = ["sm", "default", "lg"] as const;
@@ -42,7 +53,7 @@ export default function ComponentsPage() {
 
         <section className="flex flex-col gap-6">
           <SectionTitleRoot>
-            <SectionTitleSlash>//</SectionTitleSlash>
+            <SectionTitleSlash>{"//"}</SectionTitleSlash>
             <SectionTitleLabel>typography</SectionTitleLabel>
           </SectionTitleRoot>
           <div className="flex flex-col gap-5">
@@ -50,7 +61,7 @@ export default function ComponentsPage() {
               paste your code. get roasted.
             </Heading>
             <SectionTitleRoot className="text-[14px]">
-              <SectionTitleSlash>//</SectionTitleSlash>
+              <SectionTitleSlash>{"//"}</SectionTitleSlash>
               <SectionTitleLabel>detailed_analysis</SectionTitleLabel>
             </SectionTitleRoot>
             <Description>description text sample</Description>
@@ -61,7 +72,7 @@ export default function ComponentsPage() {
 
         <section className="flex flex-col gap-6">
           <SectionTitleRoot>
-            <SectionTitleSlash>//</SectionTitleSlash>
+            <SectionTitleSlash>{"//"}</SectionTitleSlash>
             <SectionTitleLabel>buttons</SectionTitleLabel>
           </SectionTitleRoot>
 
@@ -92,7 +103,7 @@ export default function ComponentsPage() {
 
         <section className="flex flex-col gap-6">
           <SectionTitleRoot>
-            <SectionTitleSlash>//</SectionTitleSlash>
+            <SectionTitleSlash>{"//"}</SectionTitleSlash>
             <SectionTitleLabel>toggle</SectionTitleLabel>
           </SectionTitleRoot>
           <div className="flex flex-wrap gap-8">
@@ -113,7 +124,7 @@ export default function ComponentsPage() {
 
         <section className="flex flex-col gap-6">
           <SectionTitleRoot>
-            <SectionTitleSlash>//</SectionTitleSlash>
+            <SectionTitleSlash>{"//"}</SectionTitleSlash>
             <SectionTitleLabel>badge_status</SectionTitleLabel>
           </SectionTitleRoot>
           <div className="flex flex-wrap gap-6">
@@ -138,7 +149,7 @@ export default function ComponentsPage() {
 
         <section className="flex flex-col gap-6">
           <SectionTitleRoot>
-            <SectionTitleSlash>//</SectionTitleSlash>
+            <SectionTitleSlash>{"//"}</SectionTitleSlash>
             <SectionTitleLabel>cards</SectionTitleLabel>
           </SectionTitleRoot>
           <Card className="max-w-[480px]">
@@ -159,22 +170,28 @@ export default function ComponentsPage() {
 
         <section className="flex flex-col gap-6">
           <SectionTitleRoot>
-            <SectionTitleSlash>//</SectionTitleSlash>
+            <SectionTitleSlash>{"//"}</SectionTitleSlash>
             <SectionTitleLabel>code_block</SectionTitleLabel>
           </SectionTitleRoot>
           <div className="max-w-[560px]">
-            <CodeBlock
-              language="javascript"
-              filename="calculate.js"
-              code={[
-                "function calculateTotal(items) {",
-                "  var total = 0;",
-                "  for (var i = 0; i < items.length; i++) {",
-                "    total = total + items[i].price;",
-                "  }",
-                "}",
-              ].join("\n")}
-            />
+            <CodeBlockRoot>
+              <CodeBlockHeaderRoot>
+                <CodeBlockHeaderDots />
+                <div className="flex-1" />
+                <CodeBlockHeaderTitle>calculate.js</CodeBlockHeaderTitle>
+              </CodeBlockHeaderRoot>
+              <CodeBlock
+                language="javascript"
+                code={[
+                  "function calculateTotal(items) {",
+                  "  var total = 0;",
+                  "  for (var i = 0; i < items.length; i++) {",
+                  "    total = total + items[i].price;",
+                  "  }",
+                  "}",
+                ].join("\n")}
+              />
+            </CodeBlockRoot>
           </div>
         </section>
 
@@ -182,19 +199,22 @@ export default function ComponentsPage() {
 
         <section className="flex flex-col gap-6">
           <SectionTitleRoot>
-            <SectionTitleSlash>//</SectionTitleSlash>
+            <SectionTitleSlash>{"//"}</SectionTitleSlash>
             <SectionTitleLabel>diff_line</SectionTitleLabel>
           </SectionTitleRoot>
           <div className="flex w-full max-w-[560px] flex-col">
             <DiffLine variant="removed" code="var total = 0;" />
             <DiffLine variant="added" code="const total = 0;" />
-            <DiffLine variant="context" code="for (let i = 0; i < items.length; i++) {" />
+            <DiffLine
+              variant="context"
+              code="for (let i = 0; i < items.length; i++) {"
+            />
           </div>
         </section>
 
         <section className="flex flex-col gap-6">
           <SectionTitleRoot>
-            <SectionTitleSlash>//</SectionTitleSlash>
+            <SectionTitleSlash>{"//"}</SectionTitleSlash>
             <SectionTitleLabel>table_row</SectionTitleLabel>
           </SectionTitleRoot>
           <div className="w-full">
