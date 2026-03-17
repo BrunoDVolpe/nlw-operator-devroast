@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import { tv } from "tailwind-variants";
 
 const diffLineVariants = tv({
@@ -20,10 +20,7 @@ export type DiffLineProps = React.HTMLAttributes<HTMLDivElement> &
     code: string;
   };
 
-const prefixMap: Record<
-  NonNullable<Parameters<typeof diffLineVariants>[0]>["variant"],
-  string
-> = {
+const prefixMap: Record<"removed" | "added" | "context", string> = {
   removed: "-",
   added: "+",
   context: " ",
@@ -50,10 +47,7 @@ export const DiffLine = ({
         : "text-text-secondary";
 
   return (
-    <div
-      className={diffLineVariants({ variant, className })}
-      {...props}
-    >
+    <div className={diffLineVariants({ variant, className })} {...props}>
       <span className={prefixColor}>{prefix}</span>
       <span className={codeColor}>{code}</span>
     </div>
