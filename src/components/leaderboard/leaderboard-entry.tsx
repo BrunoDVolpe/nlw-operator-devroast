@@ -1,6 +1,6 @@
 import type { BundledLanguage } from "shiki";
 
-import { CodeBlock } from "@/components/ui/code-block";
+import { CodeBlock, CodeBlockRoot } from "@/components/ui/code-block";
 
 import { LeaderboardEntryToggle } from "./leaderboard-entry-toggle";
 

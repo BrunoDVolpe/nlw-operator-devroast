@@ -4,6 +4,12 @@ import { codeToTokens } from "shiki";
 
 import { cn } from "@/lib/cn";
 
+export type CodeBlockRootProps = React.HTMLAttributes<HTMLDivElement>;
+
+export const CodeBlockRoot = ({ className, ...props }: CodeBlockRootProps) => (
+  <div className={cn("w-full", className)} {...props} />
+);
+
 export type CodeBlockHeaderRootProps = React.HTMLAttributes<HTMLDivElement>;
 
 export const CodeBlockHeaderRoot = ({
