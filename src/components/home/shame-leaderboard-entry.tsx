@@ -1,6 +1,6 @@
 import type { BundledLanguage } from "shiki";
 
-import { CodeBlock, CodeBlockRoot } from "@/components/ui/code-block";
+import { CodeBlock } from "@/components/ui/code-block";
 
 import { ShameLeaderboardEntryToggle } from "./shame-leaderboard-entry-toggle";
 
@@ -25,12 +25,10 @@ export async function ShameLeaderboardEntry({
       language={entry.language}
       lineCount={lineCount}
     >
-      <CodeBlockRoot>
-        <CodeBlock
-          code={entry.code}
-          language={entry.language as BundledLanguage}
-        />
-      </CodeBlockRoot>
+      <CodeBlock
+        code={entry.code}
+        language={entry.language as BundledLanguage}
+      />
     </ShameLeaderboardEntryToggle>
   );
 }

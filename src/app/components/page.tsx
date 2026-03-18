@@ -1,3 +1,5 @@
+import { cacheLife } from "next/cache";
+
 import { CodeEditorPreview } from "@/app/components/code-editor-preview";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,7 +42,11 @@ import {
 const buttonVariants = ["primary", "secondary", "link"] as const;
 const buttonSizes = ["sm", "default", "lg"] as const;
 
-export default function ComponentsPage() {
+export default async function ComponentsPage() {
+  "use cache";
+
+  cacheLife("hours");
+
   return (
     <main className="dark min-h-screen bg-bg-page px-10 py-12 text-text-primary">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-10">

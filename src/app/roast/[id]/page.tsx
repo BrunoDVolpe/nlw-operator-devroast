@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cacheLife } from "next/cache";
 
 import {
   Card,
@@ -96,14 +97,10 @@ const staticData = {
   ],
 };
 
-export default async function RoastResultPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+export default async function RoastResultPage() {
+  "use cache";
 
-  void id;
+  cacheLife("hours");
 
   const data = staticData;
 

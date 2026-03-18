@@ -4,18 +4,6 @@ import { codeToTokens } from "shiki";
 
 import { cn } from "@/lib/cn";
 
-export type CodeBlockRootProps = React.HTMLAttributes<HTMLDivElement>;
-
-export const CodeBlockRoot = ({ className, ...props }: CodeBlockRootProps) => (
-  <div
-    className={cn(
-      "code-block w-full overflow-hidden border border-border-primary bg-bg-input",
-      className,
-    )}
-    {...props}
-  />
-);
-
 export type CodeBlockHeaderRootProps = React.HTMLAttributes<HTMLDivElement>;
 
 export const CodeBlockHeaderRoot = ({
@@ -56,11 +44,10 @@ export const CodeBlockHeaderTitle = ({
   />
 );
 
-export type CodeBlockProps = {
+export type CodeBlockProps = React.HTMLAttributes<HTMLDivElement> & {
   code: string;
   language: BundledLanguage;
   showLineNumbers?: boolean;
-  className?: string;
 };
 
 export const CodeBlock = async ({
@@ -80,7 +67,12 @@ export const CodeBlock = async ({
   const lines = Array.from({ length: lineCount }, (_, index) => index + 1);
 
   return (
-    <div className={cn("flex", className)}>
+    <div
+      className={cn(
+        "code-block w-full overflow-hidden border border-border-primary bg-bg-input flex",
+        className,
+      )}
+    >
       {showLineNumbers ? (
         <div className="flex w-10 flex-col items-end gap-1 border-r border-border-primary bg-bg-surface px-2.5 py-3 font-mono text-[12px] leading-5 text-text-tertiary">
           {lines.map((line) => (

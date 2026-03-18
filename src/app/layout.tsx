@@ -3,8 +3,6 @@ import { JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 
-import { TRPCReactProvider } from "@/trpc/client";
-
 const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -45,7 +43,7 @@ export default function RootLayout({
             </nav>
           </div>
         </header>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        {children}
       </body>
     </html>
   );

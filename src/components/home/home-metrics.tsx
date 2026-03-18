@@ -1,9 +1,7 @@
 "use client";
 
 import NumberFlow from "@number-flow/react";
-import { useQuery } from "@tanstack/react-query";
-
-import { useTRPC } from "@/trpc/client";
+import * as React from "react";
 
 function MetricValue({
   value,
@@ -28,21 +26,30 @@ function MetricValue({
   );
 }
 
-export function HomeMetrics() {
-  const trpc = useTRPC();
-  const { data } = useQuery(trpc.metrics.homepage.queryOptions());
+export type HomeMetricsProps = {
+  roastedCodesCount: number;
+  avgScore: number;
+};
 
-  const roastedCodesCount = data?.roastedCodesCount ?? 0;
-  const avgScore = data?.avgScore ?? 0;
+export function HomeMetrics({ roastedCodesCount, avgScore }: HomeMetricsProps) {
+  const [animatedRoastedCodesCount, setAnimatedRoastedCodesCount] =
+    React.useState(0);
+  const [animatedAvgScore, setAnimatedAvgScore] = React.useState(0);
+
+  React.useEffect(() => {
+    setAnimatedRoastedCodesCount(roastedCodesCount);
+    setAnimatedAvgScore(avgScore);
+  }, [roastedCodesCount, avgScore]);
 
   return (
     <div className="flex items-center justify-center gap-6 text-[12px] text-text-tertiary">
       <span className="font-sans">
-        <MetricValue value={roastedCodesCount} /> codes roasted
+        <MetricValue value={animatedRoastedCodesCount} /> codes roasted
       </span>
       <span className="font-mono">·</span>
       <span className="font-sans">
-        avg score: <MetricValue value={avgScore} suffix="/10" decimals />
+        avg score:{" "}
+        <MetricValue value={animatedAvgScore} suffix="/10" decimals />
       </span>
     </div>
   );
