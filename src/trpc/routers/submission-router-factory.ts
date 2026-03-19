@@ -10,18 +10,7 @@ import {
 } from "./submission-og-share-mapper";
 
 type SubmissionDb = {
-  select: (selection: {
-    id: unknown;
-    status: unknown;
-    score: unknown;
-    roastQuote: unknown;
-  }) => {
-    from: (table: typeof submissions) => {
-      where: (condition: unknown) => {
-        limit: (count: number) => Promise<OgShareSubmissionRow[]>;
-      };
-    };
-  };
+  select: Pick<typeof import("@/db/client").db, "select">["select"];
 };
 
 function isEligibleOgShareRow(

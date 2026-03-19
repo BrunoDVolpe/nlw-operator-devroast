@@ -8,6 +8,8 @@ import {
 } from "./submission-og-share-mapper";
 import { createSubmissionRouter } from "./submission-router-factory";
 
+type SubmissionDb = Parameters<typeof createSubmissionRouter>[0];
+
 function createDbStub(row: OgShareSubmissionRow | null) {
   return {
     select: () => ({
@@ -17,7 +19,7 @@ function createDbStub(row: OgShareSubmissionRow | null) {
         }),
       }),
     }),
-  };
+  } as unknown as SubmissionDb;
 }
 
 async function callOgShareById(row: OgShareSubmissionRow | null, id: string) {
