@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { cacheLife } from "next/cache";
+import { headers } from "next/headers";
 
 import {
   getRoastOgPayload,
@@ -34,11 +35,28 @@ type RoastPageParams = {
 
 type RoastMetadataInput = {
   id: string;
+  origin: string;
   payload: RoastOgPayloadResult;
 };
 
+export function resolveMetadataOrigin(requestHeaders: Pick<Headers, "get">): string {
+  const host = requestHeaders.get("host")?.trim() || "localhost:3000";
+  const forwardedProto = requestHeaders
+    .get("x-forwarded-proto")
+    ?.split(",")[0]
+    ?.trim();
+
+  const protocol =
+    forwardedProto ||
+    (host.startsWith("localhost") || host.startsWith("127.0.0.1")
+      ? "http"
+      : "https");
+
+  return `${protocol}://${host}`;
+}
+
 export function buildRoastMetadata(input: RoastMetadataInput): Metadata {
-  const imageUrl = `/roast/${input.id}/opengraph-image`;
+  const imageUrl = `${input.origin}/roast/${input.id}/opengraph-image`;
 
   if (input.payload?.status === "ready") {
     const { score, roastQuote } = input.payload.data;
@@ -83,17 +101,24 @@ export async function generateMetadata({
   params: RoastPageParams | Promise<RoastPageParams>;
 }): Promise<Metadata> {
   const { id } = await params;
+  const requestHeaders = await headers();
+  const origin = resolveMetadataOrigin(requestHeaders);
 
   let payload: RoastOgPayloadResult = null;
 
   try {
     payload = await getRoastOgPayload(id);
-  } catch {
+  } catch (error) {
+    console.error("[roast.metadata] failed to load roast OG payload", {
+      id,
+      error,
+    });
+
     payload = null;
   }
 
-  return buildRoastMetadata({ id, payload });
-};
+  return buildRoastMetadata({ id, origin, payload });
+}
 
 const staticData = {
   score: 3.5,
