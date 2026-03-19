@@ -55,3 +55,31 @@ test("classifyOgError returns fetch for fetch-specific failures", () => {
 test("classifyOgError returns unknown when error cannot be classified", () => {
   assert.equal(classifyOgError("unexpected"), "unknown");
 });
+
+test("classifyOgError does not treat generic AbortError as timeout", () => {
+  const error = new DOMException("The operation was aborted.", "AbortError");
+
+  assert.equal(classifyOgError(error), "unknown");
+});
+
+test("classifyOgError uses timeout precedence over network indicators", () => {
+  const error = Object.assign(new Error("socket failure after timeout"), {
+    code: "ECONNRESET",
+  });
+
+  assert.equal(classifyOgError(error), "timeout");
+});
+
+test("classifyOgError uses render precedence over fetch indicators", () => {
+  const error = new Error("failed to fetch payload while rendering og image");
+
+  assert.equal(classifyOgError(error), "render");
+});
+
+test("classifyOgError includes string causes in classification", () => {
+  const error = new Error("wrapper", {
+    cause: "failed to fetch roast payload",
+  });
+
+  assert.equal(classifyOgError(error), "fetch");
+});

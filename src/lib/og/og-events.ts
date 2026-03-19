@@ -47,10 +47,10 @@ const NETWORK_CODES = new Set([
   "EAI_AGAIN",
 ]);
 
-const TIMEOUT_TEXT_PATTERN = /\b(timeout|timed out|deadline exceeded|aborted|aborterror)\b/i;
+const TIMEOUT_TEXT_PATTERN = /\b(timeout|timed out|deadline exceeded|connect timeout)\b/i;
 const NETWORK_TEXT_PATTERN = /\b(network|socket|dns|connection reset|refused|unreachable)\b/i;
 const RENDER_TEXT_PATTERN =
-  /\b(render|renderer|image response|serialize|serialization|jsx|layout)\b/i;
+  /\b(render|rendering|renderer|image response|serialize|serialization|jsx|layout)\b/i;
 const FETCH_TEXT_PATTERN = /\b(fetch|http status|response body|request failed)\b/i;
 
 export function makeOgEvent(input: OgEventInput): OgEvent {
@@ -99,6 +99,10 @@ function normalizeError(error: object): { code: string; name: string; text: stri
   const message = typeof source.message === "string" ? source.message : "";
 
   let causeText = "";
+
+  if (typeof source.cause === "string") {
+    causeText = source.cause;
+  }
 
   if (source.cause && typeof source.cause === "object") {
     const cause = source.cause as { message?: unknown; code?: unknown; name?: unknown };
