@@ -12,5 +12,23 @@ test("maps processed row to og share payload", () => {
   });
 
   assert.equal(output.id, "abc");
+  assert.equal(output.status, "processed");
   assert.equal(output.score, "4.5");
+  assert.equal(output.roastQuote, "quote");
+});
+
+test("maps non-processed row without transforming fields", () => {
+  const output = mapSubmissionToOgShare({
+    id: "def",
+    status: "failed",
+    score: null,
+    roastQuote: null,
+  });
+
+  assert.deepEqual(output, {
+    id: "def",
+    status: "failed",
+    score: null,
+    roastQuote: null,
+  });
 });

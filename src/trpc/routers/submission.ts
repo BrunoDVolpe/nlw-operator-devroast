@@ -1,6 +1,7 @@
-import { eq } from "drizzle-orm";
+import { and, eq, isNotNull } from "drizzle-orm";
 import { z } from "zod";
 
+import { db } from "@/db/client";
 import { submissions } from "@/db/schema";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 
@@ -22,8 +23,6 @@ export const submissionRouter = createTRPCRouter({
   ogShareById: baseProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ input }) => {
-      const { db } = await import("@/db/client");
-
       const [submission] = await db
         .select({
           id: submissions.id,
@@ -32,7 +31,14 @@ export const submissionRouter = createTRPCRouter({
           roastQuote: submissions.roastQuote,
         })
         .from(submissions)
-        .where(eq(submissions.id, input.id))
+        .where(
+          and(
+            eq(submissions.id, input.id),
+            eq(submissions.status, "processed"),
+            isNotNull(submissions.score),
+            isNotNull(submissions.roastQuote),
+          ),
+        )
         .limit(1);
 
       return submission ? mapSubmissionToOgShare(submission) : null;
