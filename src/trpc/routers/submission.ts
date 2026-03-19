@@ -1,3 +1,5 @@
+import { TRPCError } from "@trpc/server";
+import { after } from "next/server";
 import { z } from "zod";
 
 import { db } from "@/db/client";
@@ -9,15 +11,15 @@ const processRoastBackground = async (id: string) => {
   console.log("processing", id);
 };
 
+export const createSubmissionSchema = z.object({
+  code: z.string().min(1).max(50000),
+  language: z.enum(codeLanguageEnum.enumValues),
+  roastMode: z.boolean(),
+});
+
 export const submissionRouter = createTRPCRouter({
   create: baseProcedure
-    .input(
-      z.object({
-        code: z.string().min(1),
-        language: z.enum(codeLanguageEnum.enumValues),
-        roastMode: z.boolean(),
-      }),
-    )
+    .input(createSubmissionSchema)
     .mutation(async ({ input }) => {
       const [submission] = await db
         .insert(submissions)
@@ -30,13 +32,16 @@ export const submissionRouter = createTRPCRouter({
         .returning({ id: submissions.id });
 
       if (!submission) {
-        throw new Error("Failed to create submission");
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create submission",
+        });
       }
 
       const promise = processRoastBackground(submission.id);
 
       // Trigger background processing (stub)
-      promise.catch(console.error);
+      after(() => promise.catch(console.error));
 
       return { id: submission.id };
     }),
