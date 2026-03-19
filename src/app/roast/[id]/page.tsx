@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { cacheLife } from "next/cache";
 
 import {
+  getRoastOgPayload,
+  type RoastOgPayloadResult,
+} from "@/server/roast/get-roast-og-payload";
+import {
   Card,
   CardDescription,
   CardHeader,
@@ -21,9 +25,74 @@ import {
   SectionTitleSlash,
 } from "@/components/ui/typography";
 
-export const metadata: Metadata = {
-  title: "Roast Results | Devroast",
-  description: "Your code has been roasted.",
+const DEFAULT_ROAST_TITLE = "Roast Results | Devroast";
+const DEFAULT_ROAST_DESCRIPTION = "Your code has been roasted.";
+
+type RoastPageParams = {
+  id: string;
+};
+
+type RoastMetadataInput = {
+  id: string;
+  payload: RoastOgPayloadResult;
+};
+
+export function buildRoastMetadata(input: RoastMetadataInput): Metadata {
+  const imageUrl = `/roast/${input.id}/opengraph-image`;
+
+  if (input.payload?.status === "ready") {
+    const { score, roastQuote } = input.payload.data;
+    const title = `Roast ${score}/10 | Devroast`;
+    const description = `Score ${score}/10. "${roastQuote}"`;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        images: [imageUrl],
+      },
+      twitter: {
+        title,
+        description,
+        images: [imageUrl],
+      },
+    };
+  }
+
+  return {
+    title: DEFAULT_ROAST_TITLE,
+    description: DEFAULT_ROAST_DESCRIPTION,
+    openGraph: {
+      title: DEFAULT_ROAST_TITLE,
+      description: DEFAULT_ROAST_DESCRIPTION,
+      images: [imageUrl],
+    },
+    twitter: {
+      title: DEFAULT_ROAST_TITLE,
+      description: DEFAULT_ROAST_DESCRIPTION,
+      images: [imageUrl],
+    },
+  };
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: RoastPageParams | Promise<RoastPageParams>;
+}): Promise<Metadata> {
+  const { id } = await params;
+
+  let payload: RoastOgPayloadResult = null;
+
+  try {
+    payload = await getRoastOgPayload(id);
+  } catch {
+    payload = null;
+  }
+
+  return buildRoastMetadata({ id, payload });
 };
 
 const staticData = {
