@@ -37,3 +37,36 @@ test("truncateOgQuote normalizes explicit newlines before wrapping", () => {
 
   assert.equal(output, "alpha beta gamma");
 });
+
+test("truncateOgQuote keeps ellipsis marker within very small maxWidth", () => {
+  const output = truncateOgQuote("alpha beta gamma", {
+    maxWidth: 2,
+    maxLines: 1,
+    measureTextWidth: measureByLength,
+  });
+
+  assert.equal(output, "..");
+  assert.ok(
+    output
+      .split("\n")
+      .every((line) => measureByLength(line) <= 2),
+  );
+});
+
+test("truncateOgQuote never returns chunk wider than maxWidth for single wide glyph", () => {
+  const measureWithWideGlyph = (text: string) =>
+    text.includes("🔥") ? 5 : text.length;
+
+  const output = truncateOgQuote("🔥", {
+    maxWidth: 2,
+    maxLines: 2,
+    measureTextWidth: measureWithWideGlyph,
+  });
+
+  assert.equal(output, "..");
+  assert.ok(
+    output
+      .split("\n")
+      .every((line) => measureWithWideGlyph(line) <= 2),
+  );
+});
