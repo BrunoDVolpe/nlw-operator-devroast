@@ -42,7 +42,7 @@ test("always sets cache-control header", async () => {
         roastQuote: "Readable, but too many nested branches.",
       },
     }),
-    truncateOgQuote: () => "Readable, but too many nested branches.",
+    truncateOgQuote: async () => "Readable, but too many nested branches.",
     createRoastOgResponse: () => createImageResponse("og-success"),
     logEvent: () => {},
   });
@@ -72,7 +72,7 @@ test("forwards payload verdict into renderer input", async () => {
         roastQuote: "Readable, but too many nested branches.",
       },
     }),
-    truncateOgQuote: () => "Readable, but too many nested branches.",
+    truncateOgQuote: async () => "Readable, but too many nested branches.",
     createRoastOgResponse: (input) => {
       rendererInput = input;
       return createImageResponse("og-success");
@@ -103,7 +103,7 @@ test("falls back to image response when Takumi render throws", async () => {
         roastQuote: "Good instincts, rough execution.",
       },
     }),
-    truncateOgQuote: () => "Good instincts, rough execution.",
+    truncateOgQuote: async () => "Good instincts, rough execution.",
     createRoastOgResponse: () => {
       throw new Error("failed to render og image");
     },

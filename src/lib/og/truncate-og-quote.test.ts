@@ -3,10 +3,10 @@ import { test } from "node:test";
 
 import { truncateOgQuote } from "./truncate-og-quote";
 
-const measureByLength = (text: string) => text.length;
+const measureByLength = async (text: string) => text.length;
 
-test("truncateOgQuote adds ellipsis when wrapped text overflows two lines", () => {
-  const output = truncateOgQuote(
+test("truncateOgQuote adds ellipsis when wrapped text overflows two lines", async () => {
+  const output = await truncateOgQuote(
     "alpha beta gamma delta epsilon zeta eta theta",
     {
       maxWidth: 16,
@@ -18,8 +18,8 @@ test("truncateOgQuote adds ellipsis when wrapped text overflows two lines", () =
   assert.equal(output, "alpha beta gamma\ndelta epsilon...");
 });
 
-test("truncateOgQuote keeps fitting text without ellipsis", () => {
-  const output = truncateOgQuote("alpha beta gamma", {
+test("truncateOgQuote keeps fitting text without ellipsis", async () => {
+  const output = await truncateOgQuote("alpha beta gamma", {
     maxWidth: 30,
     maxLines: 2,
     measureTextWidth: measureByLength,
@@ -28,8 +28,8 @@ test("truncateOgQuote keeps fitting text without ellipsis", () => {
   assert.equal(output, "alpha beta gamma");
 });
 
-test("truncateOgQuote normalizes explicit newlines before wrapping", () => {
-  const output = truncateOgQuote("alpha\n\nbeta   gamma", {
+test("truncateOgQuote normalizes explicit newlines before wrapping", async () => {
+  const output = await truncateOgQuote("alpha\n\nbeta   gamma", {
     maxWidth: 30,
     maxLines: 2,
     measureTextWidth: measureByLength,
@@ -38,35 +38,33 @@ test("truncateOgQuote normalizes explicit newlines before wrapping", () => {
   assert.equal(output, "alpha beta gamma");
 });
 
-test("truncateOgQuote keeps ellipsis marker within very small maxWidth", () => {
-  const output = truncateOgQuote("alpha beta gamma", {
+test("truncateOgQuote keeps ellipsis marker within very small maxWidth", async () => {
+  const output = await truncateOgQuote("alpha beta gamma", {
     maxWidth: 2,
     maxLines: 1,
     measureTextWidth: measureByLength,
   });
 
   assert.equal(output, "..");
-  assert.ok(
-    output
-      .split("\n")
-      .every((line) => measureByLength(line) <= 2),
-  );
+  for (const line of output.split("\n")) {
+    assert.ok((await measureByLength(line)) <= 2);
+  }
 });
 
-test("truncateOgQuote never returns chunk wider than maxWidth for single wide glyph", () => {
-  const measureWithWideGlyph = (text: string) =>
+test("truncateOgQuote never returns chunk wider than maxWidth for single wide glyph", async () => {
+  const measureWithWideGlyph = async (text: string) =>
     text.includes("🔥") ? 5 : text.length;
 
-  const output = truncateOgQuote("🔥", {
+  const output = await truncateOgQuote("🔥", {
     maxWidth: 2,
     maxLines: 2,
     measureTextWidth: measureWithWideGlyph,
   });
 
   assert.equal(output, "..");
-  assert.ok(
-    output
-      .split("\n")
-      .every((line) => measureWithWideGlyph(line) <= 2),
-  );
+  const lines = output.split("\n");
+
+  for (const line of lines) {
+    assert.ok((await measureWithWideGlyph(line)) <= 2);
+  }
 });

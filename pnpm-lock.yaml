@@ -56,6 +56,9 @@ importers:
       '@number-flow/react':
         specifier: ^0.6.0
         version: 0.6.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@takumi-rs/core':
+        specifier: ^0.73.1
+        version: 0.73.1
       '@takumi-rs/image-response':
         specifier: ^0.73.1
         version: 0.73.1

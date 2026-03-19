@@ -137,7 +137,7 @@ export function createOgRoute(input: CreateOgRouteInput = {}) {
     let quote: string;
 
     try {
-      quote = dependencies.truncateOgQuote(payload.data.roastQuote, {
+      quote = await dependencies.truncateOgQuote(payload.data.roastQuote, {
         maxWidth: OG_QUOTE_MAX_WIDTH,
         maxLines: 2,
         measureTextWidth: dependencies.measureTextWidth,
