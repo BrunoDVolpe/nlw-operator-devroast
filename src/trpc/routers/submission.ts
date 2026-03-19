@@ -39,9 +39,7 @@ export const submissionRouter = createTRPCRouter({
       }
 
       // Trigger background processing (stub)
-      after(() => {
-        processRoastBackground(submission.id).catch(console.error);
-      });
+      after(() => processRoastBackground(submission.id).catch(console.error));
 
       return { id: submission.id };
     }),
