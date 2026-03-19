@@ -32,7 +32,7 @@ Este documento descreve o design da funcionalidade principal de "roast" de códi
   - Esta tarefa irá:
     1. Buscar os detalhes da submissão do banco de dados usando o `id`.
     2. Fazer uma chamada de API para o serviço de IA, passando o código e a preferência de roast.
-    3. Processar a resposta da IA para extrair a pontuação, resumo, problemas e sugestões de diff.
+    3. Processar a resposta da IA (usando \`generateText\` com \`Output.object\` do Vercel AI SDK e \`zod\`) para extrair a pontuação, resumo, problemas e sugestões de diff.
     4. Atualizar o registro da submissão no banco de dados, definindo o `status` como `'processed'` e populando os campos de resultado (`score`, `roastSummary`, etc.).
   - **Tratamento de Erros:** Se a chamada da IA ou o processamento de dados falhar, o `status` da submissão será atualizado para `'failed'`, e o erro será registrado (log) para depuração.
 
