@@ -4,6 +4,7 @@ import { db } from "@/db/client";
 import { submissions } from "@/db/schema";
 
 import { baseProcedure, createTRPCRouter } from "./init";
+import { submissionRouter } from "./routers/submission";
 
 const metricsRouter = createTRPCRouter({
   homepage: baseProcedure.query(async () => {
@@ -73,6 +74,7 @@ const leaderboardRouter = createTRPCRouter({
 export const appRouter = createTRPCRouter({
   metrics: metricsRouter,
   leaderboard: leaderboardRouter,
+  submission: submissionRouter,
 });
 
 export type AppRouter = typeof appRouter;
