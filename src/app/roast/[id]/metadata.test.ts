@@ -31,6 +31,7 @@ test("buildRoastMetadata uses contextual title and description for ready payload
         id: roastId,
         status: "processed",
         score: "8.7",
+        verdict: "clean",
         roastQuote: "Readable, but too many nested branches.",
       },
     },
