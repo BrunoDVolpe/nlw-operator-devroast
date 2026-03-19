@@ -12,6 +12,7 @@ export type RoastOgPayloadReady = {
     id: string;
     status: "processed";
     score: string;
+    verdict: string;
     roastQuote: string;
   };
 };
@@ -27,6 +28,28 @@ export type RoastOgPayloadEvaluation =
 
 export type RoastOgPayloadResult = RoastOgPayloadEvaluation | null;
 
+export function deriveRoastVerdict(score: string): string {
+  const numericScore = Number(score);
+
+  if (Number.isNaN(numericScore)) {
+    return "needs_work";
+  }
+
+  if (numericScore <= 3) {
+    return "brutal";
+  }
+
+  if (numericScore <= 6) {
+    return "needs_work";
+  }
+
+  if (numericScore <= 8) {
+    return "decent";
+  }
+
+  return "clean";
+}
+
 export function evaluateRoastOgPayload(
   payload: RoastOgPayload,
 ): RoastOgPayloadEvaluation {
@@ -41,6 +64,7 @@ export function evaluateRoastOgPayload(
         id: payload.id,
         status: "processed",
         score: payload.score,
+        verdict: deriveRoastVerdict(payload.score),
         roastQuote: payload.roastQuote,
       },
     };

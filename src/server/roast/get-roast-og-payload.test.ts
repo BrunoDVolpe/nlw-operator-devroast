@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import {
+  deriveRoastVerdict,
   evaluateRoastOgPayload,
   getRoastOgPayload,
   type RoastOgPayload,
@@ -23,9 +24,17 @@ test("evaluateRoastOgPayload returns ready for complete processed payload", () =
       id: basePayload.id,
       status: "processed",
       score: "4.5",
+      verdict: "needs_work",
       roastQuote: "quote",
     },
   });
+});
+
+test("deriveRoastVerdict maps score thresholds to verdict", () => {
+  assert.equal(deriveRoastVerdict("3"), "brutal");
+  assert.equal(deriveRoastVerdict("5.9"), "needs_work");
+  assert.equal(deriveRoastVerdict("8"), "decent");
+  assert.equal(deriveRoastVerdict("9"), "clean");
 });
 
 test("evaluateRoastOgPayload returns incomplete for payload with missing fields", () => {
@@ -54,6 +63,7 @@ test("getRoastOgPayload uses caller response and normalizes as ready", async () 
       id: basePayload.id,
       status: "processed",
       score: "4.5",
+      verdict: "needs_work",
       roastQuote: "quote",
     },
   });

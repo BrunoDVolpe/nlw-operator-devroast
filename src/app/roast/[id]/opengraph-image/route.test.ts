@@ -38,6 +38,7 @@ test("always sets cache-control header", async () => {
         id: validId,
         status: "processed",
         score: "8.7",
+        verdict: "clean",
         roastQuote: "Readable, but too many nested branches.",
       },
     }),
@@ -53,6 +54,43 @@ test("always sets cache-control header", async () => {
   assert.equal(response.headers.get("cache-control"), CACHE_CONTROL);
 });
 
+test("forwards payload verdict into renderer input", async () => {
+  let rendererInput: {
+    score: string | number | null;
+    verdict: string | null;
+    quote: string | null;
+  } | null = null;
+
+  const route = createOgRoute({
+    getRoastOgPayload: async () => ({
+      status: "ready",
+      data: {
+        id: validId,
+        status: "processed",
+        score: "8.7",
+        verdict: "clean",
+        roastQuote: "Readable, but too many nested branches.",
+      },
+    }),
+    truncateOgQuote: () => "Readable, but too many nested branches.",
+    createRoastOgResponse: (input) => {
+      rendererInput = input;
+      return createImageResponse("og-success");
+    },
+    logEvent: () => {},
+  });
+
+  await route(new Request("http://localhost"), {
+    params: { id: validId },
+  });
+
+  assert.deepEqual(rendererInput, {
+    score: "8.7",
+    verdict: "clean",
+    quote: "Readable, but too many nested branches.",
+  });
+});
+
 test("falls back to image response when Takumi render throws", async () => {
   const route = createOgRoute({
     getRoastOgPayload: async () => ({
@@ -61,6 +99,7 @@ test("falls back to image response when Takumi render throws", async () => {
         id: validId,
         status: "processed",
         score: "7.1",
+        verdict: "decent",
         roastQuote: "Good instincts, rough execution.",
       },
     }),

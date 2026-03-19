@@ -149,7 +149,7 @@ export function createOgRoute(input: CreateOgRouteInput = {}) {
     try {
       const response = dependencies.createRoastOgResponse({
         score: payload.data.score,
-        verdict: null,
+        verdict: payload.data.verdict,
         quote,
       });
 
