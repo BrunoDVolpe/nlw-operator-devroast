@@ -1,7 +1,6 @@
 import { ImageResponse } from "@takumi-rs/image-response";
 
-const OG_WIDTH = 1200;
-const OG_HEIGHT = 630;
+import { OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH } from "./og-image-dimensions";
 
 export function createFallbackOgImageResponse() {
   return new ImageResponse(
@@ -32,8 +31,8 @@ export function createFallbackOgImageResponse() {
       </div>
     ),
     {
-      width: OG_WIDTH,
-      height: OG_HEIGHT,
+      width: OG_IMAGE_WIDTH,
+      height: OG_IMAGE_HEIGHT,
     },
   );
 }

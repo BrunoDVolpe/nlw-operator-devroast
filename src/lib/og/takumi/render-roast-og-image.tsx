@@ -1,13 +1,18 @@
 import { ImageResponse } from "@takumi-rs/image-response";
 
+import { OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH } from "../og-image-dimensions";
+
 export type CreateRoastOgResponseInput = {
   score: string | number | null;
   verdict: string | null;
   quote: string | null;
 };
 
-const OG_WIDTH = 1200;
-const OG_HEIGHT = 630;
+export type NormalizedRoastOgInput = {
+  score: string;
+  verdict: string;
+  quote: string;
+};
 
 const containerStyle: React.CSSProperties = {
   display: "flex",
@@ -21,10 +26,42 @@ const containerStyle: React.CSSProperties = {
   fontFamily: "Geist Mono, monospace",
 };
 
+function normalizeScore(score: CreateRoastOgResponseInput["score"]): string {
+  if (score === null) {
+    return "--";
+  }
+
+  if (typeof score === "number") {
+    return Number.isFinite(score) ? String(score) : "--";
+  }
+
+  const normalized = score.trim();
+
+  if (normalized.length === 0) {
+    return "--";
+  }
+
+  const scoreWithoutSuffix = normalized.replace(/\s*\/\s*10\s*$/i, "").trim();
+
+  if (scoreWithoutSuffix.length === 0) {
+    return "--";
+  }
+
+  return scoreWithoutSuffix;
+}
+
+export function normalizeRoastOgInput(
+  input: CreateRoastOgResponseInput,
+): NormalizedRoastOgInput {
+  return {
+    score: normalizeScore(input.score),
+    verdict: input.verdict?.trim() || "pending_review",
+    quote: input.quote?.trim() || "Waiting for the next roast.",
+  };
+}
+
 export function createRoastOgResponse(input: CreateRoastOgResponseInput) {
-  const score = input.score === null ? "--" : String(input.score);
-  const verdict = input.verdict?.trim() || "pending_review";
-  const quote = input.quote?.trim() || "Waiting for the next roast.";
+  const normalizedInput = normalizeRoastOgInput(input);
 
   return new ImageResponse(
     (
@@ -55,13 +92,15 @@ export function createRoastOgResponse(input: CreateRoastOgResponseInput) {
               fontSize: 24,
             }}
           >
-            {verdict}
+            {normalizedInput.verdict}
           </div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 18 }}>
-            <span style={{ fontSize: 110, fontWeight: 700, lineHeight: 1 }}>{score}</span>
+            <span style={{ fontSize: 110, fontWeight: 700, lineHeight: 1 }}>
+              {normalizedInput.score}
+            </span>
             <span style={{ fontSize: 36, color: "#a5b4fc" }}>/10</span>
           </div>
 
@@ -73,14 +112,14 @@ export function createRoastOgResponse(input: CreateRoastOgResponseInput) {
               color: "#e2e8f0",
             }}
           >
-            "{quote}"
+            "{normalizedInput.quote}"
           </p>
         </div>
       </div>
     ),
     {
-      width: OG_WIDTH,
-      height: OG_HEIGHT,
+      width: OG_IMAGE_WIDTH,
+      height: OG_IMAGE_HEIGHT,
     },
   );
 }
