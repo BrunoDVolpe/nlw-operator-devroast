@@ -1,5 +1,5 @@
 import { openai } from "@ai-sdk/openai";
-import { generateObject } from "ai";
+import { generateText, Output } from "ai";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
@@ -53,9 +53,9 @@ Provide a score from 0 to 100, where 100 is perfect code and 0 is absolute garba
 List any specific issues found, assigning a severity (critical, warning, or good).
 If there are improvements to be made, provide a unified diff showing how to fix the code.`;
 
-    const { object } = await generateObject({
+    const { output } = await generateText({
       model: openai("gpt-4o"),
-      schema: roastSchema,
+      output: Output.object({ schema: roastSchema }),
       prompt,
     });
 
@@ -64,17 +64,17 @@ If there are improvements to be made, provide a unified diff showing how to fix 
       await tx
         .update(submissions)
         .set({
-          score: object.score.toString(),
-          roastSummary: object.roastSummary,
-          roastQuote: object.roastQuote,
+          score: output.score.toString(),
+          roastSummary: output.roastSummary,
+          roastQuote: output.roastQuote,
           status: "processed",
         })
         .where(eq(submissions.id, id));
 
       // Insert issues
-      if (object.issues.length > 0) {
+      if (output.issues.length > 0) {
         await tx.insert(analysisIssues).values(
-          object.issues.map((issue, index) => ({
+          output.issues.map((issue, index) => ({
             submissionId: id,
             title: issue.title,
             description: issue.description,
@@ -85,12 +85,12 @@ If there are improvements to be made, provide a unified diff showing how to fix 
       }
 
       // Insert diff suggestions
-      if (object.diffSuggestions?.unifiedDiff) {
+      if (output.diffSuggestions?.unifiedDiff) {
         await tx.insert(diffSuggestions).values({
           submissionId: id,
-          fromFile: object.diffSuggestions.fromFile,
-          toFile: object.diffSuggestions.toFile,
-          unifiedDiff: object.diffSuggestions.unifiedDiff,
+          fromFile: output.diffSuggestions.fromFile,
+          toFile: output.diffSuggestions.toFile,
+          unifiedDiff: output.diffSuggestions.unifiedDiff,
         });
       }
     });
