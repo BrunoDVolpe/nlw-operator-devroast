@@ -4,12 +4,9 @@ import { z } from "zod";
 
 import { db } from "@/db/client";
 import { codeLanguageEnum, submissions } from "@/db/schema";
+import { processRoastBackground } from "@/lib/ai/process-roast";
 
 import { baseProcedure, createTRPCRouter } from "../init";
-
-const processRoastBackground = async (id: string) => {
-  console.log("processing", id);
-};
 
 export const createSubmissionSchema = z.object({
   code: z.string().min(1).max(50000),
@@ -38,7 +35,7 @@ export const submissionRouter = createTRPCRouter({
         });
       }
 
-      // Trigger background processing (stub)
+      // Trigger background processing
       after(() => processRoastBackground(submission.id).catch(console.error));
 
       return { id: submission.id };
