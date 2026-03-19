@@ -93,7 +93,7 @@ const CodeEditorContext = React.createContext<CodeEditorContextValue | null>(
   null,
 );
 
-const useCodeEditorContext = () => {
+export const useCodeEditorContext = () => {
   const context = React.useContext(CodeEditorContext);
   if (!context) {
     throw new Error(

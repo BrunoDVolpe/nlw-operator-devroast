@@ -40,4 +40,27 @@ export const submissionRouter = createTRPCRouter({
 
       return { id: submission.id };
     }),
+
+  getById: baseProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .query(async ({ input }) => {
+      const submission = await db.query.submissions.findFirst({
+        where: (submissions, { eq }) => eq(submissions.id, input.id),
+        with: {
+          analysisIssues: {
+            orderBy: (issues, { asc }) => [asc(issues.orderIndex)],
+          },
+          diffSuggestions: true,
+        },
+      });
+
+      if (!submission) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Submission not found",
+        });
+      }
+
+      return submission;
+    }),
 });
