@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { mapSubmissionToOgShare } from "./submission";
+import { mapSubmissionToOgShare } from "./submission-og-share-mapper";
 
 test("maps processed row to og share payload", () => {
   const output = mapSubmissionToOgShare({

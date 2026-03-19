@@ -4,20 +4,7 @@ import { z } from "zod";
 import { db } from "@/db/client";
 import { submissions } from "@/db/schema";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
-
-type OgShareSubmissionRow = Pick<
-  typeof submissions.$inferSelect,
-  "id" | "status" | "score" | "roastQuote"
->;
-
-export function mapSubmissionToOgShare(row: OgShareSubmissionRow) {
-  return {
-    id: row.id,
-    status: row.status,
-    score: row.score,
-    roastQuote: row.roastQuote,
-  };
-}
+import { mapSubmissionToOgShare } from "./submission-og-share-mapper";
 
 export const submissionRouter = createTRPCRouter({
   ogShareById: baseProcedure
