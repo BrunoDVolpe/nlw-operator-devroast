@@ -106,3 +106,27 @@ export const submissionSnippets = pgTable("submission_snippets", {
   lineEnd: integer("lineEnd").notNull().default(1),
   purpose: snippetPurposeEnum("purpose").notNull().default("leaderboard"),
 });
+
+import { relations } from "drizzle-orm";
+
+export const submissionsRelations = relations(submissions, ({ many, one }) => ({
+  analysisIssues: many(analysisIssues),
+  diffSuggestions: one(diffSuggestions, {
+    fields: [submissions.id],
+    references: [diffSuggestions.submissionId],
+  }),
+}));
+
+export const analysisIssuesRelations = relations(analysisIssues, ({ one }) => ({
+  submission: one(submissions, {
+    fields: [analysisIssues.submissionId],
+    references: [submissions.id],
+  }),
+}));
+
+export const diffSuggestionsRelations = relations(diffSuggestions, ({ one }) => ({
+  submission: one(submissions, {
+    fields: [diffSuggestions.submissionId],
+    references: [submissions.id],
+  }),
+}));

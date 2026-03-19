@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
+
+import { TRPCReactProvider } from "@/trpc/client";
+
 import "./globals.css";
 
 const jetBrainsMono = JetBrains_Mono({
@@ -23,27 +26,29 @@ export default function RootLayout({
   return (
     <html lang="en" className={jetBrainsMono.variable}>
       <body>
-        <header className="w-full border-b border-border-primary bg-bg-page">
-          <div className="flex h-14 items-center justify-between px-10 font-mono">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="text-[20px] font-bold text-accent-green">
-                &gt;
-              </span>
-              <span className="text-[18px] font-medium text-text-primary">
-                devroast
-              </span>
-            </Link>
-            <nav className="flex items-center gap-6">
-              <Link
-                href="/leaderboard"
-                className="text-[13px] text-text-secondary"
-              >
-                leaderboard
+        <TRPCReactProvider>
+          <header className="w-full border-b border-border-primary bg-bg-page">
+            <div className="flex h-14 items-center justify-between px-10 font-mono">
+              <Link href="/" className="flex items-center gap-2">
+                <span className="text-[20px] font-bold text-accent-green">
+                  &gt;
+                </span>
+                <span className="text-[18px] font-medium text-text-primary">
+                  devroast
+                </span>
               </Link>
-            </nav>
-          </div>
-        </header>
-        {children}
+              <nav className="flex items-center gap-6">
+                <Link
+                  href="/leaderboard"
+                  className="text-[13px] text-text-secondary"
+                >
+                  leaderboard
+                </Link>
+              </nav>
+            </div>
+          </header>
+          {children}
+        </TRPCReactProvider>
       </body>
     </html>
   );

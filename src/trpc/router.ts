@@ -4,13 +4,14 @@ import { db } from "@/db/client";
 import { submissions } from "@/db/schema";
 
 import { baseProcedure, createTRPCRouter } from "./init";
+import { submissionRouter } from "./routers/submission";
 
 const metricsRouter = createTRPCRouter({
   homepage: baseProcedure.query(async () => {
     const [aggregate] = await db
       .select({
         roastedCodesCount: sql<number>`count(*)`,
-        avgScore: sql<string>`coalesce(round(avg(${submissions.score}), 1)::text, '0.0')`,
+        avgScore: sql<string>`coalesce(round(avg(least(greatest(${submissions.score}, 0), 10)), 1)::text, '0.0')`,
       })
       .from(submissions)
       .where(
@@ -41,7 +42,7 @@ async function getLeaderboardData(limit: number) {
     db
       .select({
         totalRoasts: sql<number>`count(*)`,
-        avgScore: sql<string>`coalesce(round(avg(${submissions.score}), 1)::text, '0.0')`,
+        avgScore: sql<string>`coalesce(round(avg(least(greatest(${submissions.score}, 0), 10)), 1)::text, '0.0')`,
       })
       .from(submissions)
       .where(
@@ -51,7 +52,7 @@ async function getLeaderboardData(limit: number) {
 
   const entries = rows.map((row, index) => ({
     rank: index + 1,
-    score: Number(row.score),
+    score: Math.min(10, Math.max(0, Number(row.score))),
     language: row.language,
     code: row.code,
   }));
@@ -73,6 +74,7 @@ const leaderboardRouter = createTRPCRouter({
 export const appRouter = createTRPCRouter({
   metrics: metricsRouter,
   leaderboard: leaderboardRouter,
+  submission: submissionRouter,
 });
 
 export type AppRouter = typeof appRouter;
