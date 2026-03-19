@@ -1,3 +1,4 @@
+import type { BundledLanguage } from "shiki";
 import {
   Card,
   CardDescription,
@@ -17,7 +18,6 @@ import {
   SectionTitleRoot,
   SectionTitleSlash,
 } from "@/components/ui/typography";
-import type { BundledLanguage } from "shiki";
 
 export type RoastResultProcessedProps = {
   submission: {
@@ -42,8 +42,11 @@ export type RoastResultProcessedProps = {
 
 function parseDiff(unifiedDiff: string) {
   const lines = unifiedDiff.split("\n");
-  const parsedLines: { variant: "context" | "removed" | "added"; code: string }[] = [];
-  
+  const parsedLines: {
+    variant: "context" | "removed" | "added";
+    code: string;
+  }[] = [];
+
   for (const line of lines) {
     if (line.startsWith("-")) {
       parsedLines.push({ variant: "removed", code: line.slice(1) });
@@ -53,24 +56,42 @@ function parseDiff(unifiedDiff: string) {
       parsedLines.push({ variant: "context", code: line.slice(1) });
     }
   }
-  
+
   return parsedLines;
 }
 
-export function RoastResultProcessed({ submission }: RoastResultProcessedProps) {
+export function RoastResultProcessed({
+  submission,
+}: RoastResultProcessedProps) {
   const lineCount = submission.code.split("\n").length;
-  const score = submission.score ? Number(submission.score) : 0;
-  
-  // Map score to verdict (simulating some logic)
+  const rawScore = submission.score ? Number(submission.score) : 0;
+  const score = Math.min(10, Math.max(0, Number(rawScore.toFixed(1))));
+
   const getVerdict = (s: number) => {
-    if (s <= 3) return "needs_serious_help";
-    if (s <= 5) return "somewhat_mediocre";
-    if (s <= 7) return "decent_effort";
-    return "actually_not_bad";
+    if (s >= 8) {
+      return {
+        label: "clean_enough_to_ship",
+        variant: "good" as const,
+      };
+    }
+
+    if (s >= 6) {
+      return {
+        label: "needs_some_refactor",
+        variant: "warning" as const,
+      };
+    }
+
+    return {
+      label: "needs_serious_help",
+      variant: "critical" as const,
+    };
   };
-  
+
   const verdict = getVerdict(score);
-  const diffLines = submission.diffSuggestions ? parseDiff(submission.diffSuggestions.unifiedDiff) : [];
+  const diffLines = submission.diffSuggestions
+    ? parseDiff(submission.diffSuggestions.unifiedDiff)
+    : [];
 
   return (
     <main className="bg-bg-page">
@@ -79,9 +100,9 @@ export function RoastResultProcessed({ submission }: RoastResultProcessedProps) 
           <ScoreRing score={score} />
 
           <div className="flex flex-1 flex-col gap-4">
-            <StatusBadgeRoot variant="verdict">
+            <StatusBadgeRoot variant={verdict.variant}>
               <StatusBadgeDot />
-              <StatusBadgeLabel>verdict: {verdict}</StatusBadgeLabel>
+              <StatusBadgeLabel>verdict: {verdict.label}</StatusBadgeLabel>
             </StatusBadgeRoot>
 
             <p className="font-mono text-[20px] leading-[1.5] text-text-primary">
@@ -114,7 +135,10 @@ export function RoastResultProcessed({ submission }: RoastResultProcessedProps) 
           </SectionTitleRoot>
 
           <CodeBlockRoot className="max-h-[424px] overflow-auto">
-            <CodeBlock code={submission.code} language={submission.language as BundledLanguage} />
+            <CodeBlock
+              code={submission.code}
+              language={submission.language as BundledLanguage}
+            />
           </CodeBlockRoot>
         </section>
 
@@ -157,7 +181,8 @@ export function RoastResultProcessed({ submission }: RoastResultProcessedProps) 
               <div className="w-full overflow-hidden border border-border-primary bg-bg-input">
                 <div className="flex h-10 items-center border-b border-border-primary px-4">
                   <span className="font-mono text-[12px] font-medium text-text-secondary">
-                    {submission.diffSuggestions.fromFile} → {submission.diffSuggestions.toFile}
+                    {submission.diffSuggestions.fromFile} →{" "}
+                    {submission.diffSuggestions.toFile}
                   </span>
                 </div>
                 <div className="flex flex-col py-1">
