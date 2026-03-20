@@ -54,6 +54,8 @@ function parseDiff(unifiedDiff: string) {
       parsedLines.push({ variant: "added", code: line.slice(1) });
     } else if (line.startsWith(" ")) {
       parsedLines.push({ variant: "context", code: line.slice(1) });
+    } else {
+      parsedLines.push({ variant: "context", code: line });
     }
   }
 

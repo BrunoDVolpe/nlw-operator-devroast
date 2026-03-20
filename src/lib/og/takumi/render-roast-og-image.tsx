@@ -18,13 +18,20 @@ const containerStyle: React.CSSProperties = {
   display: "flex",
   width: "100%",
   height: "100%",
-  padding: "56px",
+  padding: "64px",
   flexDirection: "column",
-  justifyContent: "space-between",
-  background: "linear-gradient(130deg, #06080f 0%, #0e1321 55%, #19111f 100%)",
-  color: "#f8fafc",
-  fontFamily: "Geist Mono, monospace",
+  justifyContent: "center",
+  alignItems: "center",
+  background: "#0A0A0A",
+  color: "#FAFAFA",
+  gap: "28px",
 };
+
+function getVerdictColor(verdict: string) {
+  if (verdict === "clean_enough_to_ship") return "#10B981"; // accent-green
+  if (verdict === "needs_some_refactor") return "#F59E0B"; // accent-amber
+  return "#EF4444"; // accent-red (default for needs_serious_help or others)
+}
 
 function normalizeScore(score: CreateRoastOgResponseInput["score"]): string {
   if (score === null) {
@@ -62,58 +69,56 @@ export function normalizeRoastOgInput(
 
 export function createRoastOgResponse(input: CreateRoastOgResponseInput) {
   const normalizedInput = normalizeRoastOgInput(input);
+  const color = getVerdictColor(normalizedInput.verdict);
 
   return new ImageResponse(
     (
-      <div style={containerStyle}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 24,
-              letterSpacing: "0.24em",
-              textTransform: "uppercase",
-              color: "#94a3b8",
-            }}
-          >
-            Devroast
-          </div>
-          <div
-            style={{
-              padding: "10px 16px",
-              borderRadius: 999,
-              backgroundColor: "#1e293b",
-              color: "#cbd5e1",
-              fontSize: 24,
-            }}
-          >
-            {normalizedInput.verdict}
-          </div>
+      <div style={{ ...containerStyle, fontFamily: "JetBrains Mono" }}>
+        {/* logoRow */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <span style={{ color: "#10B981", fontSize: 24, fontWeight: 700 }}>{">"}</span>
+          <span style={{ color: "#FAFAFA", fontSize: 20, fontWeight: 500 }}>devroast</span>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 18 }}>
-            <span style={{ fontSize: 110, fontWeight: 700, lineHeight: 1 }}>
-              {normalizedInput.score}
-            </span>
-            <span style={{ fontSize: 36, color: "#a5b4fc" }}>/10</span>
-          </div>
+        {/* scoreRow */}
+        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "center", gap: 4 }}>
+          <span style={{ color: color, fontSize: 160, fontWeight: 900, lineHeight: 1 }}>
+            {normalizedInput.score}
+          </span>
+          <span style={{ color: "#4B5563", fontSize: 56, fontWeight: "normal", lineHeight: 1 }}>
+            /10
+          </span>
+        </div>
 
-          <p
+        {/* verdictRow */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <div
             style={{
-              margin: 0,
-              fontSize: 38,
-              lineHeight: 1.3,
-              color: "#e2e8f0",
+              width: 12,
+              height: 12,
+              borderRadius: "50%",
+              backgroundColor: color,
             }}
-          >
-            "{normalizedInput.quote}"
-          </p>
+          />
+          <span style={{ color: color, fontSize: 20, fontWeight: "normal" }}>
+            {normalizedInput.verdict}
+          </span>
+        </div>
+
+        {/* roastQuote */}
+        <div
+          style={{
+            fontFamily: "IBM Plex Mono", // Original uses $font-secondary
+            color: "#FAFAFA",
+            fontSize: 32, // Increase slightly for 1200x630 readability
+            fontWeight: "normal",
+            lineHeight: 1.5,
+            textAlign: "center",
+            width: "100%",
+            marginTop: 16,
+          }}
+        >
+          "{normalizedInput.quote}"
         </div>
       </div>
     ),
