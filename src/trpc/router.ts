@@ -11,7 +11,7 @@ const metricsRouter = createTRPCRouter({
     const [aggregate] = await db
       .select({
         roastedCodesCount: sql<number>`count(*)`,
-        avgScore: sql<string>`coalesce(round(avg(${submissions.score}), 1)::text, '0.0')`,
+        avgScore: sql<string>`coalesce(round(avg(least(greatest(${submissions.score}, 0), 10)), 1)::text, '0.0')`,
       })
       .from(submissions)
       .where(
@@ -42,7 +42,7 @@ async function getLeaderboardData(limit: number) {
     db
       .select({
         totalRoasts: sql<number>`count(*)`,
-        avgScore: sql<string>`coalesce(round(avg(${submissions.score}), 1)::text, '0.0')`,
+        avgScore: sql<string>`coalesce(round(avg(least(greatest(${submissions.score}, 0), 10)), 1)::text, '0.0')`,
       })
       .from(submissions)
       .where(
@@ -52,7 +52,7 @@ async function getLeaderboardData(limit: number) {
 
   const entries = rows.map((row, index) => ({
     rank: index + 1,
-    score: Number(row.score),
+    score: Math.min(10, Math.max(0, Number(row.score))),
     language: row.language,
     code: row.code,
   }));
